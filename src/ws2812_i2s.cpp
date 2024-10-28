@@ -154,7 +154,7 @@ void WS2812::show(Pixel_t *pixels, float brightness)
   
   for(b=0; b<NUM_RGB_BYTES; b++)
   {
-    pixelbyte = (uint_8t)((float)(*buffer++)/brightness);
+    pixelbyte = (uint8_t)((float)(*buffer++)/brightness);
 
     for(i=0; i<WS2812_DITHER_NUM; i++)
     {
