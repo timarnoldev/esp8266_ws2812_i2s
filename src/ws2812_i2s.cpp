@@ -130,7 +130,7 @@ static const uint16_t bitpatterns[16] =
 };
 
 // display the pixels
-void WS2812::show(Pixel_t *pixels)
+void WS2812::show(Pixel_t *pixels, float brightness)
 {
   uint8_t *buffer;
   uint8_t pixelbyte;
@@ -154,7 +154,7 @@ void WS2812::show(Pixel_t *pixels)
   
   for(b=0; b<NUM_RGB_BYTES; b++)
   {
-    pixelbyte = *buffer++;
+    pixelbyte = (uint_8t)((float)(*buffer++)/brightness);
 
     for(i=0; i<WS2812_DITHER_NUM; i++)
     {
