@@ -121,13 +121,25 @@ void WS2812::init(uint16_t _num_leds)
 // this code may be used by anyone in any way without restriction or limitation.
 
 // Send out WS2812 bits with coded pulses, one nibble, then the other.
-static const uint16_t bitpatterns[16] = 
+static const uint16_t bitpatterns[16] =
 {
   0b1000100010001000, 0b1000100010001110, 0b1000100011101000, 0b1000100011101110,
   0b1000111010001000, 0b1000111010001110, 0b1000111011101000, 0b1000111011101110,
   0b1110100010001000, 0b1110100010001110, 0b1110100011101000, 0b1110100011101110,
   0b1110111010001000, 0b1110111010001110, 0b1110111011101000, 0b1110111011101110,
 };
+
+void WS2812::set_pixel(unsigned int num, Pixel_t color, float brightness)
+{
+  uint8_t pixel_g = (uint8_t)((float)(color.G)/brightness);
+
+  uint8_t pixel_r = (uint8_t)((float)(color.R)/brightness);
+
+  uint8_t pixel_b = (uint8_t)((float)(color.B)/brightness);
+  (*i2s_pixels_buffer[num*3]) =   bitpatterns[ (pixel_g & 0x0f) ] | bitpatterns[ (pixel_g>>4) & 0x0f ] >> 16;
+  *i2s_pixels_buffer[num*3+1] =   bitpatterns[ (pixel_r & 0x0f) ] | bitpatterns[ (pixel_r>>4) & 0x0f ] >> 16;
+  *i2s_pixels_buffer[num*3+2] =   bitpatterns[ (pixel_b & 0x0f) ] | bitpatterns[ (pixel_b>>4) & 0x0f ] >> 16;
+}
 
 // display the pixels
 void WS2812::show(Pixel_t *pixels, float brightness)
@@ -158,7 +170,7 @@ void WS2812::show(Pixel_t *pixels, float brightness)
 
     for(i=0; i<WS2812_DITHER_NUM; i++)
     {
-      gammabyte = gamma_dither[i][pixelbyte];
+      gammabyte = pixelbyte;
       *(i2s_ptr[i]++) = bitpatterns[ (gammabyte & 0x0f) ];
       *(i2s_ptr[i]++) = bitpatterns[ (gammabyte>>4) & 0x0f ];
     }
